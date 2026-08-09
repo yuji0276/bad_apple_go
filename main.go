@@ -45,7 +45,7 @@ func main() {
 	if err := cmd.Start(); err != nil {
 		log.Fatal(err)
 	}
-	screen := make([]byte, 0, H*W+H+3)
+	screen := make([]byte, 0, H*W+H+2)
 	count := 0
 	//1フレームの長さ
 	frameDur := time.Second / fps
@@ -66,10 +66,13 @@ func main() {
 		//count枚目を描くべき時刻。startTime と count だけで決まるので誤差が積もらない
 		target := startTime.Add(time.Duration(count) * frameDur)
 		//画面に描画
-		screen = append(screen, "\033[H"...)
+		screen = append(screen, "\033[2J\033[H"...)
 		for i := range H * W {
 			idx := int(buf[i]) * (len(ramp) - 1) / 255
 			screen = append(screen, ramp[idx])
+			if i == H*W-1 {
+				break
+			}
 			if (i+1)%W == 0 {
 				screen = append(screen, '\n')
 			}
