@@ -66,7 +66,7 @@ func main() {
 		if errors.Is(err, io.EOF) {
 			break
 		}
-		if err != nil {
+		if errors.Is(err, io.ErrUnexpectedEOF) {
 			log.Fatal(err)
 		}
 		//count枚目を描くべき時刻。startTime と count だけで決まるので誤差が積もらない
