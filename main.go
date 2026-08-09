@@ -83,5 +83,10 @@ func main() {
 		//目標時刻まで待つ。遅れていれば負の値になり、Sleep は即座に返る
 		time.Sleep(time.Until(target))
 	}
-	cmd.Wait()
+	if err = cmd.Wait(); err != nil {
+		os.Exit(1)
+	}
+	if err = sound.Wait(); err != nil {
+		os.Exit(1)
+	}
 }
