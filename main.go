@@ -8,16 +8,21 @@ import (
 	"os"
 	"os/exec"
 	"time"
+
+	"golang.org/x/term"
 )
 
 const (
 	ramp = " .:-=+*#%@"
-	H    = 30
-	W    = 80
 	fps  = 30
 )
 
 func main() {
+	fd := os.Stdout.Fd()
+	W, H, err := term.GetSize(int(fd))
+	if err != nil {
+		log.Fatal()
+	}
 	buf := make([]byte, H*W)
 	vf := fmt.Sprintf("fps=%d,scale=%d:%d:flags=area,format=gray", fps, W, H)
 
