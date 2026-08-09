@@ -1,0 +1,75 @@
+package main
+
+import (
+	"errors"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"os/exec"
+	"time"
+)
+
+const (
+	ramp = " .:-=+*#%@"
+	H    = 30
+	W    = 80
+	fps  = 30
+)
+
+func main() {
+	buf := make([]byte, H*W)
+	vf := fmt.Sprintf("fps=%d,scale=%d:%d:flags=area,format=gray", fps, W, H)
+
+	cmd := exec.Command("ffmpeg",
+		"-hide_banner", "-loglevel", "error",
+		"-i", "bad_apple.mp4",
+		"-vf", vf,
+		"-f", "rawvideo",
+		"-pix_fmt", "gray",
+		"-",
+	)
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := cmd.Start(); err != nil {
+		log.Fatal(err)
+	}
+	screen := make([]byte, 0, H*W+H+3)
+	count := 0
+	//1フレームの長さ
+	frameDur := time.Second / fps
+	//基準時刻。
+	startTime := time.Now()
+	//繰り返し1回で1フレーム描画
+	for {
+		//読み込み
+		_, err = io.ReadFull(stdout, buf)
+		//リセット
+		screen = screen[:0]
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		//count枚目を描くべき時刻。startTime と count だけで決まるので誤差が積もらない
+		target := startTime.Add(time.Duration(count) * frameDur)
+		//画面に描画
+		screen = append(screen, "\033[H"...)
+		for i := range H * W {
+			idx := int(buf[i]) * (len(ramp) - 1) / 255
+			screen = append(screen, ramp[idx])
+			if (i+1)%W == 0 {
+				screen = append(screen, '\n')
+			}
+		}
+		count++
+		//書き込み
+		os.Stdout.Write(screen)
+		//目標時刻まで待つ。遅れていれば負の値になり、Sleep は即座に返る
+		time.Sleep(time.Until(target))
+	}
+	cmd.Wait()
+}
