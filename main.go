@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"time"
@@ -19,11 +18,11 @@ const (
 	charAspect = 0.5
 )
 
-func main() {
+func run() error {
 	fd := os.Stdout.Fd()
 	screenWeight, screenHeight, err := term.GetSize(int(fd))
 	if err != nil {
-		log.Fatal()
+		return err
 	}
 	buf := make([]byte, screenHeight*screenWeight)
 	//縦を charAspect 倍に潰してから、比を保ったまま端末に収め、余りを黒で埋める。
@@ -43,13 +42,13 @@ func main() {
 	sound := exec.Command("ffplay", "-nodisp", "-autoexit", "-loglevel", "quiet", "bad_apple.mp4")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	if err := sound.Start(); err != nil {
-		log.Fatal()
+		return err
 	}
 	if err := cmd.Start(); err != nil {
-		log.Fatal(err)
+		return err
 	}
 	screen := make([]byte, 0, screenHeight*screenWeight+screenHeight+2)
 	count := 0
@@ -66,11 +65,8 @@ func main() {
 		if errors.Is(err, io.EOF) {
 			break
 		}
-		if errors.Is(err, io.ErrUnexpectedEOF) {
-			log.Fatal(err)
-		}
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		//count枚目を描くべき時刻。startTime と count だけで決まるので誤差が積もらない
 		target := startTime.Add(time.Duration(count) * frameDur)
@@ -93,9 +89,16 @@ func main() {
 		time.Sleep(time.Until(target))
 	}
 	if err = cmd.Wait(); err != nil {
-		os.Exit(1)
+		return err
 	}
 	if err = sound.Wait(); err != nil {
+		return err
+	}
+	return nil
+}
+func main() {
+	if err := run(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
