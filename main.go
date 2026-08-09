@@ -69,6 +69,9 @@ func main() {
 		if errors.Is(err, io.ErrUnexpectedEOF) {
 			log.Fatal(err)
 		}
+		if err != nil {
+			log.Fatal(err)
+		}
 		//count枚目を描くべき時刻。startTime と count だけで決まるので誤差が積もらない
 		target := startTime.Add(time.Duration(count) * frameDur)
 		//画面に描画
