@@ -19,8 +19,7 @@ const (
 )
 
 func run() error {
-	fd := os.Stdout.Fd()
-	screenWeight, screenHeight, err := term.GetSize(int(fd))
+	screenWeight, screenHeight, err := term.GetSize(int(os.Stdout.Fd()))
 	if err != nil {
 		return err
 	}
