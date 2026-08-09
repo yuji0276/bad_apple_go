@@ -15,16 +15,22 @@ import (
 const (
 	ramp = " .:-=+*#%@"
 	fps  = 30
+	//文字セルの 幅/高さ。フォント依存なので目視で合わせる
+	charAspect = 0.5
 )
 
 func main() {
 	fd := os.Stdout.Fd()
-	W, H, err := term.GetSize(int(fd))
+	screenWeight, screenHeight, err := term.GetSize(int(fd))
 	if err != nil {
 		log.Fatal()
 	}
-	buf := make([]byte, H*W)
-	vf := fmt.Sprintf("fps=%d,scale=%d:%d:flags=area,format=gray", fps, W, H)
+	buf := make([]byte, screenHeight*screenWeight)
+	//縦を charAspect 倍に潰してから、比を保ったまま端末に収め、余りを黒で埋める。
+	//pad があるので出力は必ず screenWeight*screenHeight バイト/フレームになる
+	vf := fmt.Sprintf(
+		"fps=%d,scale=iw:ih*%g,scale=%d:%d:force_original_aspect_ratio=decrease:flags=area,pad=%d:%d:(ow-iw)/2:(oh-ih)/2,format=gray",
+		fps, charAspect, screenWeight, screenHeight, screenWeight, screenHeight)
 
 	cmd := exec.Command("ffmpeg",
 		"-hide_banner", "-loglevel", "error",
@@ -45,7 +51,7 @@ func main() {
 	if err := cmd.Start(); err != nil {
 		log.Fatal(err)
 	}
-	screen := make([]byte, 0, H*W+H+2)
+	screen := make([]byte, 0, screenHeight*screenWeight+screenHeight+2)
 	count := 0
 	//1フレームの長さ
 	frameDur := time.Second / fps
@@ -66,14 +72,14 @@ func main() {
 		//count枚目を描くべき時刻。startTime と count だけで決まるので誤差が積もらない
 		target := startTime.Add(time.Duration(count) * frameDur)
 		//画面に描画
-		screen = append(screen, "\033[2J\033[H"...)
-		for i := range H * W {
+		screen = append(screen, "\033[H"...)
+		for i := range screenHeight * screenWeight {
 			idx := int(buf[i]) * (len(ramp) - 1) / 255
 			screen = append(screen, ramp[idx])
-			if i == H*W-1 {
+			if i == screenHeight*screenWeight-1 {
 				break
 			}
-			if (i+1)%W == 0 {
+			if (i+1)%screenWeight == 0 {
 				screen = append(screen, '\n')
 			}
 		}
