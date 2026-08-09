@@ -29,9 +29,13 @@ func main() {
 		"-pix_fmt", "gray",
 		"-",
 	)
+	sound := exec.Command("ffplay", "-nodisp", "-autoexit", "-loglevel", "quiet", "bad_apple.mp4")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		log.Fatal(err)
+	}
+	if err := sound.Start(); err != nil {
+		log.Fatal()
 	}
 	if err := cmd.Start(); err != nil {
 		log.Fatal(err)
