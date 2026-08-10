@@ -1,4 +1,4 @@
-# asciiplay
+# Bad Apple by Go
 
 *English | [日本語](README.ja.md)*
 
