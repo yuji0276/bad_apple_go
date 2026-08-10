@@ -82,6 +82,13 @@ func run() error {
 		screen = screen[:0]
 		//count枚目を描くべき時刻。startTime と count だけで決まるので誤差が積もらない
 		target := startTime.Add(time.Duration(count) * frameDur)
+		//目標時刻まで待つ。遅れていれば負の値になり、Sleep は即座に返る
+		if time.Until(target) < 0 {
+			count++
+			continue
+		} else {
+			time.Sleep(time.Until(target))
+		}
 		//画面に描画
 		screen = append(screen, "\033[H"...)
 		for i := range screenHeight * screenWeight {
@@ -97,8 +104,6 @@ func run() error {
 		count++
 		//書き込み
 		os.Stdout.Write(screen)
-		//目標時刻まで待つ。遅れていれば負の値になり、Sleep は即座に返る
-		time.Sleep(time.Until(target))
 	}
 	if err = cmd.Wait(); err != nil {
 		return err
