@@ -1,21 +1,23 @@
 # asciiplay
 
-ターミナルの中で「Bad Apple!!」を ASCII アート（文字だけの映像）として再生します。音も一緒に鳴ります。
+*English | [日本語](README.ja.md)*
 
-映像は、明るいところほど濃い文字（`@`）、暗いところほど薄い文字（` ` や `.`）に置き換えて表示されます。
+Plays "Bad Apple!!" in your terminal as ASCII art — video made of nothing but characters, with the audio playing alongside it.
+
+Each pixel becomes a character: the brighter the pixel, the denser the character (`@`); the darker it is, the lighter the character (` ` or `.`).
 
 ---
 
-## 必要なもの
+## Requirements
 
-| 必要なもの | 用途 |
+| What you need | What it's for |
 |---|---|
-| **ffmpeg**（`ffmpeg` と `ffplay` の両方） | 映像の変換と音声の再生 |
-| ターミナル | 表示先。等幅フォントであればなんでも構いません |
+| **ffmpeg** (both `ffmpeg` and `ffplay`) | Converting the video and playing the audio |
+| A terminal | Where it's drawn. Any terminal with a monospaced font will do |
 
-### ffmpeg のインストール
+### Installing ffmpeg
 
-**macOS（Homebrew）**
+**macOS (Homebrew)**
 
 ```bash
 brew install ffmpeg
@@ -29,9 +31,9 @@ sudo apt install ffmpeg
 
 **Windows**
 
-[ffmpeg 公式サイト](https://ffmpeg.org/download.html) からダウンロードするか、PowerShell で `winget install ffmpeg` を実行してください。
+Download it from the [official ffmpeg site](https://ffmpeg.org/download.html), or run `winget install ffmpeg` in PowerShell.
 
-インストールできたかどうかは、次のコマンドで確認できます。バージョン情報が表示されれば成功です。
+To check that it installed correctly, run the commands below. If they print version information, you're set.
 
 ```bash
 ffmpeg -version
@@ -40,68 +42,68 @@ ffplay -version
 
 ---
 
-## 再生する
+## Playing it
 
-1. このプロジェクトのフォルダに移動します。
+1. Move into the project folder.
 
    ```bash
    cd bad_apple
    ```
 
-2. 再生します。
+2. Play it.
 
    ```bash
    ./asciiplay
    ```
 
-   `asciiplay` が動かない場合や、お使いの環境用に作り直したい場合は、[Go](https://go.dev/dl/) をインストールしたうえで次を実行してください。
+   If `asciiplay` doesn't run, or you'd like to rebuild it for your own environment, install [Go](https://go.dev/dl/) and run:
 
    ```bash
    go run .
    ```
 
-3. 終わるまで待つか、途中でやめたいときは **Ctrl + C** を押します。
+3. Wait for it to finish, or press **Ctrl + C** to stop early.
 
 ---
 
-## きれいに見るためのコツ
+## Tips for the best picture
 
-- **再生前にターミナルを最大化してください。** 表示サイズは起動した瞬間のウィンドウの大きさで決まります。大きいほど細かく表示されます。
-- **フォントサイズを小さくしてください。** 文字が小さいほど解像度が上がり、絵として見やすくなります。ターミナルの設定や `Ctrl + -`（macOS では `⌘ + -`）で縮小できます。
-- **背景が黒いターミナルがおすすめです。** 明るい部分を濃い文字で描くので、黒背景に白文字だと元の映像に近い見た目になります。
-- **再生中はウィンドウのサイズを変えないでください。** 途中で変えると表示が崩れます。崩れたら Ctrl + C で止めて、もう一度実行してください。
+- **Maximize your terminal before you start.** The output size is fixed at the moment the program launches — the bigger the window, the more detail you get.
+- **Shrink the font size.** Smaller characters mean higher resolution and a picture that's easier to read. Use your terminal's settings, or `Ctrl + -` (`⌘ + -` on macOS).
+- **A dark-background terminal works best.** Bright areas are drawn with dense characters, so white-on-black looks closest to the original video.
+- **Don't resize the window while it's playing.** Resizing mid-playback garbles the output. If that happens, stop with Ctrl + C and run it again.
 
 ---
 
-## 困ったときは
+## Troubleshooting
 
-**`ffmpeg: no such file or directory` と出る**
+**`ffmpeg: no such file or directory`**
 
-ffmpeg がインストールされていないか、パスが通っていません。上の「ffmpeg のインストール」を確認してください。
+ffmpeg either isn't installed or isn't on your `PATH`. See "Installing ffmpeg" above.
 
-**`bad_apple.mp4: No such file or directory` と出る**
+**`bad_apple.mp4: No such file or directory`**
 
-`bad_apple.mp4` がある `bad_apple` フォルダの中で実行する必要があります。`cd bad_apple` してから実行してください。
+The program has to run from the `bad_apple` folder, where `bad_apple.mp4` lives. Run `cd bad_apple` first.
 
-**`./asciiplay` が `permission denied` と出る**
+**`./asciiplay` says `permission denied`**
 
-実行する権限がありません。次のコマンドで権限を付けてください。
+The file isn't marked executable. Add the permission with:
 
 ```bash
 chmod +x asciiplay
 ```
 
-**映像は流れるけれど音が出ない**
+**The video plays but there's no sound**
 
-`ffplay` が入っていない可能性があります。`ffplay -version` で確認してください。ffmpeg 本体とは別に入る環境もあります。
+`ffplay` may not be installed. Check with `ffplay -version` — on some systems it's packaged separately from ffmpeg itself.
 
-**絵が縦や横に間延びして見える**
+**The picture looks stretched vertically or horizontally**
 
-ターミナルのフォントによって文字の縦横比が違うためです。フォントを変えるか、ウィンドウの縦横比を調整すると改善します。
+Character cells have different width-to-height ratios depending on the font. Switching fonts or adjusting the window's proportions helps.
 
-**Ctrl + C で止めたあと、表示がおかしくなった**
+**The terminal looks broken after Ctrl + C**
 
-次のコマンドでターミナルを元に戻せます。
+Restore it with:
 
 ```bash
 reset
@@ -109,14 +111,14 @@ reset
 
 ---
 
-## 別の動画を再生したい
+## Playing a different video
 
-再生する動画は `bad_apple.mp4` という名前で固定されています。別の動画を映したい場合は、その動画ファイルを `bad_apple.mp4` という名前にして同じフォルダに置いてください（元のファイルは名前を変えて取っておくことをおすすめします）。
+The filename is hardcoded to `bad_apple.mp4`. To play something else, rename your video to `bad_apple.mp4` and put it in the same folder (it's a good idea to rename the original file rather than overwrite it).
 
-コントラストがはっきりした、白黒に近い映像ほどきれいに表示されます。
+High-contrast, near-black-and-white footage looks best.
 
 ---
 
-## このプロジェクトについて
+## About this project
 
-Go の学習を兼ねて作ったものです。生成 AI にコードを書かせるのではなく、詰まったときに文法や仕組みを質問する程度にとどめ、実装は自分の手で書いています。
+Built as an exercise in learning Go. Rather than having generative AI write the code, I limited it to asking questions about syntax and how things work when I got stuck — the implementation is my own.
