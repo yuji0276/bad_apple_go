@@ -53,6 +53,9 @@ func run() error {
 	count := 0
 	//1フレームの長さ
 	frameDur := time.Second / fps
+	//カーソルを非表示
+	fmt.Print("\033[?25l")
+	defer fmt.Print("\033[?25h")
 	//基準時刻。
 	startTime := time.Now()
 	//繰り返し1回で1フレーム描画
@@ -93,6 +96,7 @@ func run() error {
 	if err = sound.Wait(); err != nil {
 		return err
 	}
+
 	return nil
 }
 func main() {
