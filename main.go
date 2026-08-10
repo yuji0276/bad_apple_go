@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"os/signal"
 	"time"
 
 	"golang.org/x/term"
@@ -17,6 +18,8 @@ const (
 	//文字セルの 幅/高さ。フォント依存なので目視で合わせる
 	charAspect = 0.5
 )
+
+var errInterrupted = errors.New("interrupted")
 
 func run() error {
 	screenWeight, screenHeight, err := term.GetSize(int(os.Stdout.Fd()))
@@ -49,6 +52,8 @@ func run() error {
 	if err := cmd.Start(); err != nil {
 		return err
 	}
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, os.Interrupt)
 	screen := make([]byte, 0, screenHeight*screenWeight+screenHeight+2)
 	count := 0
 	//1フレームの長さ
@@ -60,6 +65,11 @@ func run() error {
 	startTime := time.Now()
 	//繰り返し1回で1フレーム描画
 	for {
+		select {
+		case <-ch:
+			return errInterrupted
+		default:
+		}
 		//読み込み
 		_, err = io.ReadFull(stdout, buf)
 		//リセット
