@@ -62,7 +62,7 @@ func run() error {
 	fmt.Print("\033[?25l")
 	defer fmt.Print("\033[?25h")
 	//基準時刻。
-	startTime := time.Now()
+	var startTime time.Time
 	//繰り返し1回で1フレーム描画
 	for {
 		select {
@@ -80,9 +80,12 @@ func run() error {
 			return err
 		}
 		screen = screen[:0]
+		if startTime.IsZero() {
+			startTime = time.Now()
+		}
 		//count枚目を描くべき時刻。startTime と count だけで決まるので誤差が積もらない
 		target := startTime.Add(time.Duration(count) * frameDur)
-		//目標時刻まで待つ。遅れていれば負の値になり、Sleep は即座に返る
+		//目標時刻まで待つ。遅れていれば負の値になり、continue。
 		if time.Until(target) < 0 {
 			count++
 			continue
