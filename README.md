@@ -6,6 +6,10 @@ Plays "Bad Apple!!" in your terminal as ASCII art — video made of nothing but 
 
 Each pixel becomes a character: the brighter the pixel, the denser the character (`@`); the darker it is, the lighter the character (` ` or `.`).
 
+![asciiplay running in a terminal](docs/demo.gif)
+
+<sub>Actual output, captured at an 80×30 terminal. The real thing runs at 30 fps, fills your whole window, and plays the audio too.</sub>
+
 ---
 
 ## Requirements
